@@ -1,7 +1,5 @@
 import { InvalidParamsError, MissingParamsError, PasswordsNotMatching, ServerError } from '../errors'
-import type { EmailValidator } from '../protocols'
-import type { addAccount, addAccountModel } from '../../domain/usecases/addAccount'
-import type { accountModel } from '../../domain/models/account'
+import type { EmailValidator, addAccount, addAccountModel, accountModel } from './signup/signupProtocols'
 import { SignUpController } from './signup'
 
 // TIPO DE RETORNO DA FACTORY
