@@ -3,7 +3,7 @@
 
 import type { addAccount, Controller, httpRequest, httpResponse, EmailValidator } from './signup/signupProtocols'
 import { InvalidParamsError, MissingParamsError, PasswordsNotMatching } from '../errors'
-import { badRequest, serverError } from '../helpers/http-helper'
+import { badRequest, ok, serverError } from '../helpers/http-helper'
 export class SignUpController implements Controller {
   private readonly emailValidator: EmailValidator
   private readonly addAccount: addAccount
@@ -32,16 +32,13 @@ export class SignUpController implements Controller {
         return badRequest(new InvalidParamsError('email'))
       }
 
-      this.addAccount.add({
+      const account = this.addAccount.add({
         name,
         email,
         password
       })
 
-      return {
-        statusCode: 200,
-        body: ''
-      }
+      return ok(account)
     } catch (err) {
       return serverError()
     }

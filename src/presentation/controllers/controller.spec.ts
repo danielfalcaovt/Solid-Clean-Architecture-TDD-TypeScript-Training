@@ -36,8 +36,8 @@ const makeAddAccountStub = (): addAccount => {
     add (account: addAccountModel): accountModel {
       const fakeAccount: accountModel = {
         id: 'valid_id',
-        name: 'valid_name',
-        email: 'valid_email',
+        name: 'valid_username',
+        email: 'valid_email@gmail.com',
         password: 'valid_password'
       }
       return fakeAccount
@@ -149,7 +149,7 @@ describe('SignUp Controller', () => {
   test('Should return 500 if emailValidator throws', () => {
     const { sut, emailValidatorStub } = makeSut()
     jest.spyOn(emailValidatorStub, 'isValid').mockImplementation(() => {
-      throw new ServerError()
+      throw new Error()
     })
     const httpRequest = {
       body: {
@@ -179,6 +179,42 @@ describe('SignUp Controller', () => {
       name: 'any_name',
       email: 'any_email@mail.com',
       password: 'any_password'
+    })
+  })
+  test('Should return 500 if addAccount throws', () => {
+    const { sut, addAccountStub } = makeSut()
+    jest.spyOn(addAccountStub, 'add').mockImplementation(() => {
+      throw new Error()
+    })
+    const httpRequest = {
+      body: {
+        name: 'username',
+        email: 'email@gmail.com',
+        password: 'password',
+        confirmPassword: 'password'
+      }
+    }
+    const httpResponse = sut.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
+  })
+  test('Return 200 if account has been added with success', () => {
+    const { sut } = makeSut()
+    const httpRequest = {
+      body: {
+        name: 'valid_username',
+        email: 'valid_email@gmail.com',
+        password: 'valid_password',
+        confirmPassword: 'valid_password'
+      }
+    }
+    const httpResponse = sut.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(200)
+    expect(httpResponse.body).toEqual({
+      id: 'valid_id',
+      name: 'valid_username',
+      email: 'valid_email@gmail.com',
+      password: 'valid_password'
     })
   })
 })
