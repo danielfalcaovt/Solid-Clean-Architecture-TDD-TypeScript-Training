@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-confusing-void-expression */
 /* eslint-disable @typescript-eslint/return-await */
 
 import type { EncrypterMethod } from '../protocols/encrypter'
@@ -10,18 +11,22 @@ interface sutTypes {
 
 // FACTORY
 const makeSut = (): sutTypes => {
-  class EncrypterStub implements EncrypterMethod {
-    async encrypt (password: string): Promise<string> {
-      return new Promise(resolve => { resolve('hashedPassword') })
-    }
-  }
-  const encrypterStub = new EncrypterStub()
+  const encrypterStub = makeEncrypter()
   const sut = new DbAddAccount(encrypterStub)
 
   return {
     sut,
     encrypterStub
   }
+}
+
+const makeEncrypter = (): EncrypterMethod => {
+  class EncrypterStub implements EncrypterMethod {
+    async encrypt (password: string): Promise<string> {
+      return new Promise(resolve => resolve('hashed_password'))
+    }
+  }
+  return new EncrypterStub()
 }
 
 describe('DbAddAccount Usecase', () => {
